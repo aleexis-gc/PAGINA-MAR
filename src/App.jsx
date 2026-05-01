@@ -12,7 +12,7 @@ import { LoginView } from './LoginView';
 
 // --- CONFIGURACIÓN DE IMAGEN ---
 // Importante: Si usas Vite, la carpeta 'IMAGES' debe estar dentro de 'public'.
-const LOGO_URL = "/mar.png"; 
+const LOGO_URL = "/logo.png"; 
 
 export default function App() {
   // --- ESTADOS DE SESIÓN Y SUCURSAL ---

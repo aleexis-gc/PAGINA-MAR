@@ -41,6 +41,9 @@ export const ProductsView = ({ products, setProducts, activeBranch, formatMoney 
     if (!error && data) {
       setProducts([...products, data[0]]);
       setNewProduct({ name: '', price: '', stock: '' });
+    } else {
+      console.error("Error al agregar producto:", error);
+      alert("No se pudo agregar el producto: " + (error?.message || "Error de conexión"));
     }
   };
 
