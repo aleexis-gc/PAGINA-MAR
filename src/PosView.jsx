@@ -59,9 +59,13 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
     setSales(prev => [saleData[0], ...prev]);
 
     // Descontar Stock en Supabase (Uno por uno o por RPC)
-    for (const item of cart) {
-      const { error } = await supabase.from('products').update({ stock: item.stock - item.qty }).eq('id', item.id);
-    }
+    await Promise.all(
+      cart.map(item => 
+        supabase.from('products')
+          .update({ stock: item.stock - item.qty })
+          .eq('id', item.id)
+      )
+    );
 
     if (paymentMethod === 'Cuenta Corriente') {
       let customerName = '';

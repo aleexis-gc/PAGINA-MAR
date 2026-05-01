@@ -56,15 +56,19 @@ export default function App() {
 
   const fetchBranchData = async (branch) => {
     setLoading(true);
-    const { data: p } = await supabase.from('products').select('*').eq('branch', branch);
-    const { data: c } = await supabase.from('customers').select('*').eq('branch', branch);
-    const { data: s } = await supabase.from('sales').select('*').eq('branch', branch);
-    const { data: t } = await supabase.from('transactions').select('*').eq('branch', branch).order('date', { ascending: false });
-    
-    setProducts(p || []);
-    setCustomers(c || []);
-    setSales(s || []);
-    setTransactions(t || []);
+    const [
+      { data: p },
+      { data: c },
+      { data: s },
+      { data: t }
+    ] = await Promise.all([
+      supabase.from('products').select('*').eq('branch', branch),
+      supabase.from('customers').select('*').eq('branch', branch),
+      supabase.from('sales').select('*').eq('branch', branch),
+      supabase.from('transactions').select('*').eq('branch', branch).order('date', { ascending: false })
+    ]);
+
+    setProducts(p || []); setCustomers(c || []); setSales(s || []); setTransactions(t || []);
     setLoading(false);
   };
 
