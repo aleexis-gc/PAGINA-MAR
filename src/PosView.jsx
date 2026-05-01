@@ -12,8 +12,16 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
   const cartTotal = cart.reduce((sum, item) => sum + (Number(item.price || 0) * item.qty), 0);
 
   const addToCart = (product) => {
+    if (product.stock <= 0) {
+      alert("Este producto no tiene stock disponible.");
+      return;
+    }
     const existing = cart.find(item => item.id === product.id);
     if (existing) {
+      if (existing.qty >= product.stock) {
+        alert("No hay más stock disponible para este producto.");
+        return;
+      }
       setCart(cart.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item));
     } else {
       setCart([...cart, { ...product, qty: 1 }]);

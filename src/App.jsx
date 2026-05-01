@@ -56,20 +56,27 @@ export default function App() {
 
   const fetchBranchData = async (branch) => {
     setLoading(true);
-    const [
-      { data: p },
-      { data: c },
-      { data: s },
-      { data: t }
-    ] = await Promise.all([
-      supabase.from('products').select('*').eq('branch', branch),
-      supabase.from('customers').select('*').eq('branch', branch),
-      supabase.from('sales').select('*').eq('branch', branch),
-      supabase.from('transactions').select('*').eq('branch', branch).order('date', { ascending: false })
-    ]);
+    try {
+      const [
+        { data: p, error: ep },
+        { data: c, error: ec },
+        { data: s, error: es },
+        { data: t, error: et }
+      ] = await Promise.all([
+        supabase.from('products').select('*').eq('branch', branch),
+        supabase.from('customers').select('*').eq('branch', branch),
+        supabase.from('sales').select('*').eq('branch', branch),
+        supabase.from('transactions').select('*').eq('branch', branch).order('date', { ascending: false })
+      ]);
 
-    setProducts(p || []); setCustomers(c || []); setSales(s || []); setTransactions(t || []);
-    setLoading(false);
+      if (ep || ec || es || et) throw new Error("Error al obtener datos de Supabase");
+
+      setProducts(p || []); setCustomers(c || []); setSales(s || []); setTransactions(t || []);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // --- CONTROL DE CAMBIO DE SUCURSAL (PARA EL ADMIN) ---
