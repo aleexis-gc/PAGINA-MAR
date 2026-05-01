@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:theme {
+  /* Cambia estos valores a tu gusto (puedes usar nombres o Hexadecimal #000000) */
+  --color-fondo-principal: rgb(38, 37, 37);
+  --color-panel: var(--color-zinc-900);
+  --color-borde: var(--color-zinc-800);
+  --color-texto-base: rgb(212, 212, 216); /* Un gris mucho más claro (zinc-300) */
+  --color-texto-secundario: var(--color-zinc-400);
+  
+  --color-brand: rgb(255, 255, 255);
+  --color-success: var(--color-emerald-600);
+  --color-danger: var(--color-rose-600);
+}
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+
+html, body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-fondo-principal);
+  color: var(--color-texto-base);
+}
