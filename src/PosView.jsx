@@ -12,13 +12,15 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
   const cartTotal = cart.reduce((sum, item) => sum + (Number(item.price || 0) * item.qty), 0);
 
   const addToCart = (product) => {
-    if (product.stock <= 0) {
+    const currentStock = product.stock ?? 0; // Si es null, lo toma como 0
+
+    if (currentStock <= 0) {
       alert("Este producto no tiene stock disponible.");
       return;
     }
     const existing = cart.find(item => item.id === product.id);
     if (existing) {
-      if (existing.qty >= product.stock) {
+      if (existing.qty >= currentStock) {
         alert("No hay más stock disponible para este producto.");
         return;
       }
@@ -59,7 +61,8 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
     const { data: saleData, error: saleError } = await supabase.from('sales').insert([newSale]).select();
 
     if (saleError) {
-      alert("Error al guardar la venta");
+      console.error("Error de Supabase:", saleError);
+      alert("Error al guardar la venta: " + saleError.message);
       return;
     }
 
