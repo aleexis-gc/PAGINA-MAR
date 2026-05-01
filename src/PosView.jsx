@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, ShoppingCart, Minus, Plus, Trash2, CheckCircle } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
-export const PosView = ({ products, customers, sales, setSales, setProducts, setCustomers, addTransaction, formatMoney, currentUser }) => {
+export const PosView = ({ products, customers, sales, setSales, setProducts, setCustomers, addTransaction, formatMoney, currentUser, activeBranch }) => {
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -47,14 +47,13 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
       return;
     }
 
-    const branch = products[0]?.branch; // Obtenemos la sucursal actual
     const newSale = {
       items: cart,
       total: cartTotal,
       payment_method: paymentMethod,
       customerId: selectedCustomer || null,
       seller: currentUser,
-      branch: branch
+      branch: activeBranch
     };
 
     const { data: saleData, error: saleError } = await supabase.from('sales').insert([newSale]).select();
