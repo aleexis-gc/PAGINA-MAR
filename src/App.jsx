@@ -12,32 +12,13 @@ import { LoginView } from './LoginView';
 
 // --- CONFIGURACIÓN DE IMAGEN ---
 // Importante: Si usas Vite, la carpeta 'IMAGES' debe estar dentro de 'public'.
-const LOGO_URL = "/MAR PNG.png"; 
-
-// --- DATOS INICIALES DE PRUEBA ---
-const initialProducts = [
-  { id: 1, name: 'Remera Básica Algodón', price: 8500, stock: 50 },
-  { id: 2, name: 'Jean Mom Vintage', price: 28000, stock: 15 },
-  { id: 3, name: 'Campera de Cuero PU', price: 45000, stock: 8 },
-  { id: 4, name: 'Zapatillas Urbanas', price: 32000, stock: 12 },
-  { id: 5, name: 'Buzo Canguro Oversize', price: 19500, stock: 20 },
-];
-
-const initialCustomers = [
-  { id: 1, name: 'María Gómez', phone: '3512345678', balance: 15000 },
-  { id: 2, name: 'Juan Pérez', phone: '3518765432', balance: 0 },
-  { id: 3, name: 'Sofía López', phone: '3511122334', balance: 32000 },
-];
-
-const initialTransactions = [
-  { id: 1, date: new Date().toISOString(), type: 'IN', amount: 50000, description: 'Saldo inicial de caja' },
-];
+const LOGO_URL = "/mar.png"; 
 
 export default function App() {
   // --- ESTADOS DE SESIÓN Y SUCURSAL ---
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('currentUser') || null);
-  const [activeBranch, setActiveBranch] = useState(() => localStorage.getItem('activeBranch') || null);
+  const [activeBranch, setActiveBranch] = useState(() => localStorage.getItem('activeBranch') || 'LOCAL1');
   const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +27,11 @@ export default function App() {
   const [customers, setCustomers] = useState([]);
   const [sales, setSales] = useState([]);
   const [transactions, setTransactions] = useState([]);
+
+  // Guardar sucursal por defecto si no existe
+  useEffect(() => {
+    if (!localStorage.getItem('activeBranch')) localStorage.setItem('activeBranch', 'LOCAL1');
+  }, []);
 
   // --- CARGAR DATOS DESDE SUPABASE ---
   useEffect(() => {

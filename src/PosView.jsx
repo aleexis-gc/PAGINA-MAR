@@ -67,13 +67,24 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
     setSales(prev => [saleData[0], ...prev]);
 
     // Descontar Stock en Supabase (Uno por uno o por RPC)
-    await Promise.all(
-      cart.map(item => 
-        supabase.from('products')
-          .update({ stock: item.stock - item.qty })
-          .eq('id', item.id)
-      )
-    );
+    try {
+      await Promise.all(
+        cart.map(item => 
+          supabase.from('products')
+            .update({ stock: item.stock - item.qty })
+            .eq('id', item.id)
+        )
+      );
+
+      // Actualizar el estado local de productos para que la UI refleje el nuevo stock inmediatamente
+      setProducts(prev => prev.map(p => {
+        const itemInCart = cart.find(item => item.id === p.id);
+        return itemInCart ? { ...p, stock: p.stock - itemInCart.qty } : p;
+      }));
+    } catch (err) {
+      console.error("Error actualizando stock:", err);
+      alert("La venta se registró pero hubo un problema al actualizar el stock en el servidor.");
+    }
 
     if (paymentMethod === 'Cuenta Corriente') {
       let customerName = '';
