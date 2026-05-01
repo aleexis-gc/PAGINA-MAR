@@ -11,7 +11,6 @@ import { AccountsView } from './AccountsView';
 import { LoginView } from './LoginView';
 
 // --- CONFIGURACIÓN DE IMAGEN ---
-// Importante: Si usas Vite, la carpeta 'IMAGES' debe estar dentro de 'public'.
 const LOGO_URL = "/mar.png"; 
 
 export default function App() {
