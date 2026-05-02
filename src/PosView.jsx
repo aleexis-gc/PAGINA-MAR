@@ -53,7 +53,7 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
       items: cart,
       total: cartTotal,
       payment_method: paymentMethod,
-      customerId: selectedCustomer || null,
+      customer_id: selectedCustomer || null,
       seller: currentUser,
       branch: activeBranch
     };
