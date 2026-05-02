@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Users, Trash2, History, Package } from 'lucide-react';
+import { Users, Trash2, History, Package, ReceiptIndianRupee } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
-export const AccountsView = ({ customers, setCustomers, activeBranch, formatMoney, addTransaction, currentUser, sales }) => {
+export const AccountsView = ({ customers, setCustomers, activeBranch, formatMoney, addTransaction, currentUser, sales, transactions }) => {
   const [newCustomerName, setNewCustomerName] = useState('');
   const [payAmounts, setPayAmounts] = useState({});
 
@@ -35,7 +35,7 @@ export const AccountsView = ({ customers, setCustomers, activeBranch, formatMone
     if (!error) {
       setCustomers(prev => prev.map(c => c.id === customerId ? { ...c, balance: newBalance } : c));
       const customer = customers.find(c => c.id === customerId);
-      addTransaction('IN', amount, `Entrega CC - ${customer.name}`);
+      addTransaction('IN', amount, `Entrega CC - ${customer.name}`, customerId);
       setPayAmounts(prev => ({ ...prev, [customerId]: '' }));
       alert(`¡Pago de ${formatMoney(amount)} registrado con éxito!`);
     }
@@ -127,6 +127,29 @@ export const AccountsView = ({ customers, setCustomers, activeBranch, formatMone
                   ))}
                 {sales.filter(s => s.customer_id?.toString() === customer.id.toString()).length === 0 && (
                   <p className="text-zinc-600 text-center py-2 italic">Sin compras registradas</p>
+                )}
+              </div>
+            </div>
+
+            {/* Historial de Pagos */}
+            <div className="bg-emerald-950/20 p-4 border-t border-zinc-800 max-h-40 overflow-y-auto">
+              <h5 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-3 flex items-center">
+                <ReceiptIndianRupee size={14} className="mr-2" /> Historial de Pagos
+              </h5>
+              <div className="space-y-2">
+                {transactions
+                  .filter(tx => tx.customer_id?.toString() === customer.id.toString() && tx.type === 'IN')
+                  .map(tx => (
+                    <div key={tx.id} className="flex justify-between items-center text-xs border-b border-emerald-900/30 pb-1 last:border-0">
+                      <div>
+                        <p className="text-zinc-300 font-medium">{new Date(tx.date).toLocaleDateString('es-AR')} - {new Date(tx.date).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</p>
+                        <p className="text-[10px] text-zinc-500">Recibido por: {tx.user}</p>
+                      </div>
+                      <span className="text-emerald-400 font-bold">+{formatMoney(tx.amount)}</span>
+                    </div>
+                  ))}
+                {transactions.filter(tx => tx.customer_id?.toString() === customer.id.toString() && tx.type === 'IN').length === 0 && (
+                  <p className="text-zinc-600 text-center py-2 italic text-[10px]">Sin pagos registrados</p>
                 )}
               </div>
             </div>

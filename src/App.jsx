@@ -82,13 +82,14 @@ export default function App() {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(amount);
   };
 
-  const addTransaction = async (type, amount, description) => {
+  const addTransaction = async (type, amount, description, customerId = null) => {
     const newTx = {
       type,
       amount: parseFloat(amount),
       description,
       user: currentUser,
-      branch: activeBranch
+      branch: activeBranch,
+      customer_id: customerId
     };
 
     const { data, error } = await supabase.from('transactions').insert([newTx]).select();
@@ -224,7 +225,7 @@ export default function App() {
         {activeTab === 'pos' && <PosView products={products} customers={customers} sales={sales} setSales={setSales} setProducts={setProducts} setCustomers={setCustomers} addTransaction={addTransaction} formatMoney={formatMoney} currentUser={currentUser} activeBranch={activeBranch} />}
         {activeTab === 'products' && <ProductsView products={products} setProducts={setProducts} activeBranch={activeBranch} formatMoney={formatMoney} />}
         {activeTab === 'cash' && <CashbookView transactions={transactions} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} />}
-        {activeTab === 'accounts' && <AccountsView customers={customers} setCustomers={setCustomers} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} currentUser={currentUser} sales={sales} />}
+        {activeTab === 'accounts' && <AccountsView customers={customers} setCustomers={setCustomers} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} currentUser={currentUser} sales={sales} transactions={transactions} />}
       </main>
     </div>
   );

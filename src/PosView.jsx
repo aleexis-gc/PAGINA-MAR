@@ -97,7 +97,7 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
         }
         return c;
       }));
-      addTransaction('CC_SALE', cartTotal, `Venta CC - ${customerName}`);
+      addTransaction('CC_SALE', cartTotal, `Venta CC - ${customerName}`, selectedCustomer);
     } else {
       addTransaction('IN', cartTotal, `Venta (${paymentMethod})`);
     }
