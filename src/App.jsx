@@ -224,7 +224,7 @@ export default function App() {
         {activeTab === 'pos' && <PosView products={products} customers={customers} sales={sales} setSales={setSales} setProducts={setProducts} setCustomers={setCustomers} addTransaction={addTransaction} formatMoney={formatMoney} currentUser={currentUser} activeBranch={activeBranch} />}
         {activeTab === 'products' && <ProductsView products={products} setProducts={setProducts} activeBranch={activeBranch} formatMoney={formatMoney} />}
         {activeTab === 'cash' && <CashbookView transactions={transactions} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} />}
-        {activeTab === 'accounts' && <AccountsView customers={customers} setCustomers={setCustomers} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} currentUser={currentUser} />}
+        {activeTab === 'accounts' && <AccountsView customers={customers} setCustomers={setCustomers} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} currentUser={currentUser} sales={sales} />}
       </main>
     </div>
   );

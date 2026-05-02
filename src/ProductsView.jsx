@@ -92,7 +92,6 @@ export const ProductsView = ({ products, setProducts, activeBranch, formatMoney 
                 onChange={e => setNewProduct({...newProduct, size: e.target.value})} 
                 className="w-full p-2 bg-zinc-800 border-zinc-700 border rounded-lg text-white" 
                 placeholder="XL, 42..." 
-                required={newProduct.type === 'Indumentaria'}
               />
             </div>
           )}
