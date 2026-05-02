@@ -3,7 +3,7 @@ import { Pencil, Trash2, CheckCircle, X } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 export const ProductsView = ({ products, setProducts, activeBranch, formatMoney }) => {
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '' });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', type: 'Accesorio', size: '' });
   const [editingId, setEditingId] = useState(null);
   const [editPrice, setEditPrice] = useState('');
 
@@ -33,14 +33,16 @@ export const ProductsView = ({ products, setProducts, activeBranch, formatMoney 
       name: newProduct.name,
       price: parseFloat(newProduct.price),
       stock: parseInt(newProduct.stock) || 0,
-      branch: activeBranch
+      branch: activeBranch,
+      type: newProduct.type,
+      size: newProduct.type === 'Indumentaria' ? newProduct.size : null
     };
 
     const { data, error } = await supabase.from('products').insert([product]).select();
     
     if (!error && data) {
       setProducts([...products, data[0]]);
-      setNewProduct({ name: '', price: '', stock: '' });
+      setNewProduct({ name: '', price: '', stock: '', type: 'Accesorio', size: '' });
     } else {
       console.error("Error al agregar producto:", error);
       alert("No se pudo agregar el producto: " + (error?.message || "Error de conexión"));
@@ -65,11 +67,35 @@ export const ProductsView = ({ products, setProducts, activeBranch, formatMoney 
       
       <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
         <h3 className="text-lg font-semibold mb-4 text-white">Agregar Nuevo Producto</h3>
-        <form onSubmit={handleAddProduct} className="flex flex-col md:flex-row gap-4 items-end">
+        <form onSubmit={handleAddProduct} className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 w-full">
             <label className="block text-sm font-medium text-zinc-400 mb-1">Nombre / Descripción</label>
             <input type="text" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} className="w-full p-2 bg-zinc-800 border-zinc-700 border rounded-lg text-white" placeholder="Ej. Remera Lisa Blanca" required />
           </div>
+          <div className="w-full md:w-40">
+            <label className="block text-sm font-medium text-zinc-400 mb-1">Tipo</label>
+            <select 
+              value={newProduct.type} 
+              onChange={e => setNewProduct({...newProduct, type: e.target.value})} 
+              className="w-full p-2 bg-zinc-800 border-zinc-700 border rounded-lg text-white"
+            >
+              <option value="Accesorio">Accesorio</option>
+              <option value="Indumentaria">Indumentaria</option>
+            </select>
+          </div>
+          {newProduct.type === 'Indumentaria' && (
+            <div className="w-full md:w-24">
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Talle</label>
+              <input 
+                type="text" 
+                value={newProduct.size} 
+                onChange={e => setNewProduct({...newProduct, size: e.target.value})} 
+                className="w-full p-2 bg-zinc-800 border-zinc-700 border rounded-lg text-white" 
+                placeholder="XL, 42..." 
+                required={newProduct.type === 'Indumentaria'}
+              />
+            </div>
+          )}
           <div className="w-full md:w-32">
             <label className="block text-sm font-medium text-zinc-400 mb-1">Precio ($)</label>
             <input type="number" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} className="w-full p-2 bg-zinc-800 border-zinc-700 border rounded-lg text-white" placeholder="0.00" required min="0" />
@@ -87,6 +113,7 @@ export const ProductsView = ({ products, setProducts, activeBranch, formatMoney 
           <thead className="bg-zinc-950/50">
             <tr className="text-zinc-500 text-sm">
               <th className="p-4 font-medium">Producto</th>
+              <th className="p-4 font-medium">Tipo / Talle</th>
               <th className="p-4 font-medium text-right">Precio Venta</th>
               <th className="p-4 font-medium text-center">Stock Disponible</th>
               <th className="p-4 font-medium text-center">Acciones</th>
@@ -96,6 +123,10 @@ export const ProductsView = ({ products, setProducts, activeBranch, formatMoney 
             {products.map(product => (
               <tr key={product.id} className="border-t border-zinc-800">
                 <td className="p-4 text-zinc-100 font-medium">{product.name}</td>
+                <td className="p-4 text-zinc-400 text-sm">
+                  {product.type} 
+                  {product.size && <span className="ml-2 px-2 py-0.5 bg-zinc-800 rounded text-zinc-200">Talle: {product.size}</span>}
+                </td>
                 <td className="p-4 text-right">
                   {editingId === product.id ? (
                     <input type="number" value={editPrice} onChange={e => setEditPrice(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSavePrice(product.id)} className="w-24 p-1 bg-zinc-800 border-zinc-700 border rounded text-right text-white" autoFocus />
