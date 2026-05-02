@@ -13,6 +13,8 @@ export const LoginView = ({ onLogin, logoUrl }) => {
       onLogin('LOCAL1', 'LOCAL1');
     } else if (u === 'local2' && pass === '1012') {
       onLogin('LOCAL2', 'LOCAL2');
+    } else if (u === 'deve' && pass === 'deve') {
+      onLogin('DEVE', 'LOCAL1'); // Usuario de desarrollo
     } else if ((u === 'admin' || u === 'jefe') && pass === 'admin') {
       onLogin('ADMIN', 'LOCAL1');
     } else {
@@ -42,7 +44,7 @@ export const LoginView = ({ onLogin, logoUrl }) => {
               className="w-full p-3 bg-zinc-800 border-zinc-700 border rounded-xl text-white outline-none"
               value={user}
               onChange={e => setUser(e.target.value)}
-              placeholder="local1, local2 o admin"
+              placeholder="local1, local2, deve o admin"
             />
           </div>
           <div>
