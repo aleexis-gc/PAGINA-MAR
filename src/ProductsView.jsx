@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pencil, Trash2, CheckCircle, X } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
-export const ProductsView = ({ products, setProducts, activeBranch, formatMoney }) => { // currentUser no se usa directamente aquí
+export const ProductsView = ({ products, setProducts, activeBranch, formatMoney }) => {
   const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', type: 'Accesorio', size: '' });
   const [editingId, setEditingId] = useState(null);
   const [editPrice, setEditPrice] = useState('');

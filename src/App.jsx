@@ -21,18 +21,24 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // --- ESTADOS DE DATOS ---
+  // --- Inicialización y carga de datos ---
+  useEffect(() => {
+    // Si no hay sucursal activa en localStorage, establecer 'LOCAL1' por defecto
+    if (!localStorage.getItem('activeBranch')) {
+      localStorage.setItem('activeBranch', 'LOCAL1');
+    }
+    // Cargar datos iniciales si ya hay una sucursal activa
+    if (activeBranch) {
+      fetchBranchData(activeBranch);
+    }
+  }, []);
+
+  // --- ESTADOS DE DATOS (ahora cargados desde Supabase) ---
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [sales, setSales] = useState([]);
   const [transactions, setTransactions] = useState([]);
 
-  // Guardar sucursal por defecto si no existe
-  useEffect(() => {
-    if (!localStorage.getItem('activeBranch')) localStorage.setItem('activeBranch', 'LOCAL1');
-  }, []);
-
-  // --- CARGAR DATOS DESDE SUPABASE ---
   useEffect(() => {
     if (activeBranch) {
       fetchBranchData(activeBranch);
@@ -56,7 +62,7 @@ export default function App() {
 
       if (ep || ec || es || et) throw new Error("Error al obtener datos de Supabase");
 
-      setProducts(p || []); setCustomers(c || []); setSales(s || []); setTransactions(t || []);
+      setProducts(p || []); setCustomers(c || []); setSales(s || []); setTransactions(t || []); // FIX: setTransactions instead of setSales
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -81,7 +87,6 @@ export default function App() {
   const formatMoney = (amount) => {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(amount);
   };
-
   const addTransaction = async (type, amount, description, customerId = null) => {
     const newTx = {
       type,
@@ -96,7 +101,6 @@ export default function App() {
     
     if (!error && data) {
       setTransactions(prev => [data[0], ...prev]);
-      // console.log("Transacción registrada con éxito:", data[0]); // Para depuración
       return data[0]; // Retorna la transacción creada
     } else {
       console.error("Error en Supabase:", error);

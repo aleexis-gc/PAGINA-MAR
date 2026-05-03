@@ -35,13 +35,20 @@ export const AccountsView = ({ customers, setCustomers, activeBranch, formatMone
     if (!error) {
       setCustomers(prev => prev.map(c => c.id === customerId ? { ...c, balance: newBalance } : c));
       const customer = customers.find(c => c.id === customerId);
-      const transactionResult = await addTransaction('IN', amount, `Entrega CC - ${customer.name}`, customerId);
-      if (!transactionResult) {
-        alert("Pago registrado, pero hubo un problema al registrar la transacción en el historial.");
-        return;
+      if (customer) { // Asegurarse de que el cliente existe antes de crear la transacción
+        const transactionResult = await addTransaction('IN', amount, `Entrega CC - ${customer.name}`, customerId);
+        if (!transactionResult) {
+          alert("Pago registrado, pero hubo un problema al registrar la transacción en el historial.");
+          // Considerar revertir el balance si la transacción falla, o al menos loguear el error.
+          // Por ahora, el alert ya indica el problema.
+          return;
+        }
       }
       setPayAmounts(prev => ({ ...prev, [customerId]: '' }));
       alert(`¡Pago de ${formatMoney(amount)} registrado con éxito!`);
+    } else {
+      console.error("Error al actualizar el saldo del cliente:", error);
+      alert("Error al registrar el pago: " + error.message);
     }
   };
 

@@ -162,7 +162,7 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
               onClick={() => addToCart(product)} 
               className="group border border-zinc-800 rounded-xl p-3 cursor-pointer hover:border-zinc-600 hover:bg-zinc-800/40 transition-all bg-zinc-900/50 flex flex-col justify-between h-28 md:h-32 active:scale-95 select-none"
             >
-              <div className="flex-1"> {/* Added flex-1 to allow content to grow */}
+              <div className="flex-1"> {/* Added flex-1 to allow content to grow, if not already present */}
                 <p className="font-semibold text-zinc-100 text-sm line-clamp-2 leading-tight group-hover:text-white">
                   {product.name}
                 </p>
