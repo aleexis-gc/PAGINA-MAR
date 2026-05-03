@@ -88,50 +88,56 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
       alert("La venta se registró pero hubo un problema al actualizar el stock en el servidor.");
     }
 
-    let transactionDescription = `Venta (${paymentMethod})`;
-    let customerNameForTransaction = '';
+    // --- Lógica de transacción y actualización de saldo ---
+    try {
+      let transactionDescription = `Venta (${paymentMethod})`;
+      let customerNameForTransaction = '';
 
-    if (paymentMethod === 'Cuenta Corriente' && selectedCustomer) {
-      const customerToUpdate = customers.find(c => c.id.toString() === selectedCustomer.toString());
-      if (customerToUpdate) {
-        customerNameForTransaction = customerToUpdate.name;
-        transactionDescription = `Venta CC - ${customerNameForTransaction}`;
+      if (paymentMethod === 'Cuenta Corriente' && selectedCustomer) {
+        const customerToUpdate = customers.find(c => c.id?.toString() === selectedCustomer?.toString());
+        if (customerToUpdate) {
+          customerNameForTransaction = customerToUpdate.name;
+          transactionDescription = `Venta CC - ${customerNameForTransaction}`;
 
-        // Actualizar el saldo del cliente en la base de datos
-        const newBalance = customerToUpdate.balance + cartTotal;
-        const { error: customerError } = await supabase
-          .from('customers')
-          .update({ balance: newBalance })
-          .eq('id', selectedCustomer);
+          // Actualizar el saldo del cliente en la base de datos
+          const newBalance = customerToUpdate.balance + cartTotal;
+          const { error: customerError } = await supabase
+            .from('customers')
+            .update({ balance: newBalance })
+            .eq('id', selectedCustomer);
 
-        if (customerError) {
-          console.error("Error actualizando saldo del cliente:", customerError);
-          alert("La venta se registró, pero hubo un problema al actualizar el saldo del cliente en el servidor.");
-        } else {
-          // Actualizar el estado local de clientes
-          setCustomers(prev => prev.map(c => 
-            c.id.toString() === selectedCustomer.toString() ? { ...c, balance: newBalance } : c
-          ));
+          if (customerError) {
+            console.error("Error actualizando saldo del cliente:", customerError);
+            alert("La venta se registró, pero hubo un problema al actualizar el saldo del cliente en el servidor.");
+          } else {
+            // Actualizar el estado local de clientes
+            setCustomers(prev => prev.map(c => 
+              c.id?.toString() === selectedCustomer?.toString() ? { ...c, balance: newBalance } : c
+            ));
+          }
         }
       }
+
+      // Registrar la transacción de pago
+      const transactionResult = await addTransaction(
+        paymentMethod === 'Cuenta Corriente' ? 'CC_SALE' : 'IN',
+        cartTotal,
+        transactionDescription,
+        selectedCustomer || null
+      );
+
+      if (!transactionResult) {
+        alert("¡Venta registrada! Sin embargo, hubo un problema al registrar la transacción de pago.");
+      }
+
+      setCart([]); // Limpiar el carrito
+      setSelectedCustomer(''); // Resetear cliente seleccionado
+      setPaymentMethod('Efectivo'); // Resetear método de pago
+      alert("¡Venta registrada!"); // Mensaje final de éxito
+    } catch (error) {
+      console.error("Error general en handleCheckout:", error);
+      alert("Ocurrió un error inesperado al procesar la venta.");
     }
-
-    // Registrar la transacción de pago
-    const transactionResult = await addTransaction(
-      paymentMethod === 'Cuenta Corriente' ? 'CC_SALE' : 'IN',
-      cartTotal,
-      transactionDescription,
-      selectedCustomer || null
-    );
-
-    if (!transactionResult) {
-      alert("¡Venta registrada! Sin embargo, hubo un problema al registrar la transacción de pago.");
-    }
-
-    setCart([]); // Limpiar el carrito
-    setSelectedCustomer(''); // Resetear cliente seleccionado
-    setPaymentMethod('Efectivo'); // Resetear método de pago
-    alert("¡Venta registrada!"); // Mensaje final de éxito
   };
 
   return (
@@ -156,8 +162,10 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
               onClick={() => addToCart(product)} 
               className="group border border-zinc-800 rounded-xl p-3 cursor-pointer hover:border-zinc-600 hover:bg-zinc-800/40 transition-all bg-zinc-900/50 flex flex-col justify-between h-28 md:h-32 active:scale-95 select-none"
             >
-              <div>
-                <p className="font-semibold text-zinc-100 text-sm line-clamp-2 leading-tight group-hover:text-white">{product.name}</p>
+              <div className="flex-1"> {/* Added flex-1 to allow content to grow */}
+                <p className="font-semibold text-zinc-100 text-sm line-clamp-2 leading-tight group-hover:text-white">
+                  {product.name}
+                </p>
                 {product.size && <span className="text-[10px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded mt-1 inline-block">Talle: {product.size}</span>}
               </div>
               <div className="flex flex-col items-start gap-1">

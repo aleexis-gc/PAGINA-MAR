@@ -96,6 +96,7 @@ export default function App() {
     
     if (!error && data) {
       setTransactions(prev => [data[0], ...prev]);
+      // console.log("Transacción registrada con éxito:", data[0]); // Para depuración
       return data[0]; // Retorna la transacción creada
     } else {
       console.error("Error en Supabase:", error);
