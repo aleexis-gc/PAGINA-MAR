@@ -96,8 +96,10 @@ export default function App() {
     
     if (!error && data) {
       setTransactions(prev => [data[0], ...prev]);
+      return data[0]; // Retorna la transacción creada
     } else {
       console.error("Error en Supabase:", error);
+      return null; // Indica que hubo un error
     }
   };
 
@@ -223,7 +225,7 @@ export default function App() {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full max-w-7xl mx-auto bg-black">
         {activeTab === 'dashboard' && <DashboardView transactions={transactions} activeBranch={activeBranch} customers={customers} sales={sales} formatMoney={formatMoney} />}
         {activeTab === 'pos' && <PosView products={products} customers={customers} sales={sales} setSales={setSales} setProducts={setProducts} setCustomers={setCustomers} addTransaction={addTransaction} formatMoney={formatMoney} currentUser={currentUser} activeBranch={activeBranch} />}
-        {activeTab === 'products' && <ProductsView products={products} setProducts={setProducts} activeBranch={activeBranch} formatMoney={formatMoney} />}
+        {activeTab === 'products' && <ProductsView products={products} setProducts={setProducts} activeBranch={activeBranch} formatMoney={formatMoney} currentUser={currentUser} />}
         {activeTab === 'cash' && <CashbookView transactions={transactions} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} />}
         {activeTab === 'accounts' && <AccountsView customers={customers} setCustomers={setCustomers} activeBranch={activeBranch} formatMoney={formatMoney} addTransaction={addTransaction} currentUser={currentUser} sales={sales} transactions={transactions} />}
       </main>

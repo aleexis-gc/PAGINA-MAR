@@ -88,24 +88,50 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
       alert("La venta se registró pero hubo un problema al actualizar el stock en el servidor.");
     }
 
-    if (paymentMethod === 'Cuenta Corriente') {
-      let customerName = '';
-      setCustomers(prev => prev.map(c => {
-        if (c.id.toString() === selectedCustomer.toString()) {
-          customerName = c.name;
-          return { ...c, balance: c.balance + cartTotal };
+    let transactionDescription = `Venta (${paymentMethod})`;
+    let customerNameForTransaction = '';
+
+    if (paymentMethod === 'Cuenta Corriente' && selectedCustomer) {
+      const customerToUpdate = customers.find(c => c.id.toString() === selectedCustomer.toString());
+      if (customerToUpdate) {
+        customerNameForTransaction = customerToUpdate.name;
+        transactionDescription = `Venta CC - ${customerNameForTransaction}`;
+
+        // Actualizar el saldo del cliente en la base de datos
+        const newBalance = customerToUpdate.balance + cartTotal;
+        const { error: customerError } = await supabase
+          .from('customers')
+          .update({ balance: newBalance })
+          .eq('id', selectedCustomer);
+
+        if (customerError) {
+          console.error("Error actualizando saldo del cliente:", customerError);
+          alert("La venta se registró, pero hubo un problema al actualizar el saldo del cliente en el servidor.");
+        } else {
+          // Actualizar el estado local de clientes
+          setCustomers(prev => prev.map(c => 
+            c.id.toString() === selectedCustomer.toString() ? { ...c, balance: newBalance } : c
+          ));
         }
-        return c;
-      }));
-      addTransaction('CC_SALE', cartTotal, `Venta CC - ${customerName}`, selectedCustomer);
-    } else {
-      addTransaction('IN', cartTotal, `Venta (${paymentMethod})`);
+      }
     }
 
-    setCart([]);
-    setSelectedCustomer('');
-    setPaymentMethod('Efectivo');
-    alert("¡Venta registrada!");
+    // Registrar la transacción de pago
+    const transactionResult = await addTransaction(
+      paymentMethod === 'Cuenta Corriente' ? 'CC_SALE' : 'IN',
+      cartTotal,
+      transactionDescription,
+      selectedCustomer || null
+    );
+
+    if (!transactionResult) {
+      alert("¡Venta registrada! Sin embargo, hubo un problema al registrar la transacción de pago.");
+    }
+
+    setCart([]); // Limpiar el carrito
+    setSelectedCustomer(''); // Resetear cliente seleccionado
+    setPaymentMethod('Efectivo'); // Resetear método de pago
+    alert("¡Venta registrada!"); // Mensaje final de éxito
   };
 
   return (

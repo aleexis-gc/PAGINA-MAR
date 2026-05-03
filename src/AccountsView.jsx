@@ -35,7 +35,11 @@ export const AccountsView = ({ customers, setCustomers, activeBranch, formatMone
     if (!error) {
       setCustomers(prev => prev.map(c => c.id === customerId ? { ...c, balance: newBalance } : c));
       const customer = customers.find(c => c.id === customerId);
-      addTransaction('IN', amount, `Entrega CC - ${customer.name}`, customerId);
+      const transactionResult = await addTransaction('IN', amount, `Entrega CC - ${customer.name}`, customerId);
+      if (!transactionResult) {
+        alert("Pago registrado, pero hubo un problema al registrar la transacción en el historial.");
+        return;
+      }
       setPayAmounts(prev => ({ ...prev, [customerId]: '' }));
       alert(`¡Pago de ${formatMoney(amount)} registrado con éxito!`);
     }
