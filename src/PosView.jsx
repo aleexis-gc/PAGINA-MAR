@@ -130,7 +130,10 @@ export const PosView = ({ products, customers, sales, setSales, setProducts, set
               onClick={() => addToCart(product)} 
               className="group border border-zinc-800 rounded-xl p-3 cursor-pointer hover:border-zinc-600 hover:bg-zinc-800/40 transition-all bg-zinc-900/50 flex flex-col justify-between h-28 md:h-32 active:scale-95 select-none"
             >
-              <p className="font-semibold text-zinc-100 text-sm line-clamp-2 leading-tight group-hover:text-white">{product.name}</p>
+              <div>
+                <p className="font-semibold text-zinc-100 text-sm line-clamp-2 leading-tight group-hover:text-white">{product.name}</p>
+                {product.size && <span className="text-[10px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded mt-1 inline-block">Talle: {product.size}</span>}
+              </div>
               <div className="flex flex-col items-start gap-1">
                 <span className="text-xs text-zinc-500 font-medium">Stock: {product.stock}</span>
                 <span className="text-lg font-black text-white">{formatMoney(product.price)}</span>
